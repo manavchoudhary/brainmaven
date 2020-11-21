@@ -7,16 +7,27 @@ class LRU_cache():
 
     def get(self, key):
         if key not in self.cache:
-            return -1
+            return None
         else:
             self.cache.move_to_end(key, last=True)
-            val =  self.cache[key]
+            val = self.cache[key]
             return val
+
     def put(self, key, val):
         if(len(self.cache.keys()) == self.max_size):
             self.cache.popitem(last=False)
         self.cache[key] = val
 
+    def delete(self, key):
+        if key not in self.cache:
+            return None
+        else:
+            val = self.cache.pop(key)
+            return val
+
+    def reset(self):
+        self.cache = OrderedDict()
+        return
 
 def test_case_1():
     lru_cache = LRU_cache(2)
@@ -30,12 +41,12 @@ def test_case_1():
     lru_cache.put('c', 3)
     assert lru_cache.cache == OrderedDict({'a':1, 'c':3})
     val = lru_cache.get('b')
-    assert val == -1
+    assert val == None
     assert lru_cache.cache == OrderedDict({'a':1, 'c':3})
     lru_cache.put('d', 4)
     assert lru_cache.cache == OrderedDict({'c':3, 'd':4})
     val = lru_cache.get('a')
-    assert val == -1
+    assert val == None
     assert lru_cache.cache == OrderedDict({'c':3, 'd':4})
     val = lru_cache.get('c')
     assert val == 3
@@ -43,6 +54,11 @@ def test_case_1():
     val = lru_cache.get('d')
     assert val == 4
     assert lru_cache.cache == OrderedDict({'c':3, 'd':4})
+    val = lru_cache.delete('c')
+    assert val == 3
+    assert lru_cache.delete('c') == None
+    lru_cache.reset()
+    assert lru_cache.cache == OrderedDict()
     print('Test Case 1 passed')
 
 test_case_1()
